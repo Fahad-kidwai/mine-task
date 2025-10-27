@@ -13,10 +13,6 @@ body {
   background-color: #1a1d29;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
 
 ::-webkit-scrollbar-track {
   background: #1a1d29;
@@ -33,7 +29,9 @@ body {
 
 /* Glow effect */
 .glow-green {
-  box-shadow: 0 0 20px rgba(0, 231, 1, 0.3);
+ background-image: linear-gradient(90deg,#24ee89,#9fe871);
+ box-shadow: 0 0 12px #23ee884d, 0 -2px #1dca6a inset;
+ border-radius: 0.5rem;
 }
 
 /* Tile animation */

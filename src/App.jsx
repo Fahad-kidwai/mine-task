@@ -97,7 +97,7 @@ function CustomSlider({ value, onChange, disabled, min, max }) {
 }
 
 function App() {
-  const [minesCount, setMinesCount] = useState(4);
+  const [minesCount, setMinesCount] = useState(3);
   const [betAmount, setBetAmount] = useState(0);
   const [gameState, setGameState] = useState('idle'); // idle, playing, won, lost
   const [tiles, setTiles] = useState([]);
@@ -226,51 +226,70 @@ function App() {
               </div>
             </div>
             
-            <div className="flex gap-2 mb-3">
-              <div className="flex-1 flex items-center bg-[#252836] rounded-lg px-3 py-3 border border-gray-700">
-                <img 
-                  src="https://flagcdn.com/w20/in.png" 
-                  alt="INR" 
-                  className="w-6 h-4 mr-2"
-                />
-                <input
-                  type="number"
-                  value={betAmount}
-                  onChange={(e) => setBetAmount(Number(e.target.value))}
-                  className="bg-transparent text-white text-lg font-semibold outline-none w-full"
-                  placeholder="0"
-                />
+            <div className="flex items-center bg-[#292d2e] rounded-lg px-3 py-1 border border-gray-700  mb-3 ">
+              <img 
+                src="https://flagcdn.com/w20/in.png" 
+                alt="INR" 
+                className="w-6 h-4 mr-2"
+              />
+              <input  value={betAmount} onChange={(e) => setBetAmount(Number(e.target.value))} className="bg-transparent text-white text-sm font-bold outline-none w-full" />
+              
+              <div className="flex items-center gap-2 ml-2">
+                <button 
+                  className="px-3 py-1.5 rounded bg-[#3a4142] hover:bg-[#333644] text-white text-sm font-medium transition"
+                  onClick={() => setBetAmount(Math.floor(betAmount / 2))}
+                >
+                  1/2
+                </button>
+                <button 
+                  className="px-3 py-1.5 rounded bg-[#3a4142] hover:bg-[#333644] text-white text-sm font-medium transition"
+                  onClick={() => setBetAmount(betAmount * 2)}
+                >
+                  2×
+                </button>
+                <div className="flex flex-col gap-0.1 bg-[#3a4142] rounded-lg px-3 py-1 ">
+                  <button 
+                    className=" hover:bg-[#333644] rounded transition"
+                    onClick={() => setBetAmount(betAmount + 1)}
+                  >
+                    <svg className="w-3 h-3 text-gray-400" viewBox="0 0 28 28" fill="none" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={5} d="M5 15l7-7 7 7" />
+                    </svg>
+                  </button>
+                  <button 
+                    className=" hover:bg-[#333644] rounded transition"
+                    onClick={() => setBetAmount(Math.max(0, betAmount - 1))}
+                  >
+                    <svg className="w-3 h-3 text-gray-400" viewBox="0 0 28 28" fill="none" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={5} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
               </div>
-              <button 
-                className="bg-[#252836] px-4 py-2 rounded-lg text-white hover:bg-[#2d3142] transition border border-gray-700"
-              >
-                1/2
-              </button>
-              <button 
-                className="bg-[#252836] px-4 py-2 rounded-lg text-white hover:bg-[#2d3142] transition border border-gray-700"
-              >
-                2×
-              </button>
             </div>
 
             <div className="grid grid-cols-4 gap-2">
               <button
-                className="bg-[#252836] py-2 rounded-lg text-gray-300 hover:bg-[#2d3142] transition border border-gray-700"
+                onClick={() => setBetAmount(10)}
+                className="bg-[#3a4142] py-2 rounded-lg text-gray-300 hover:bg-[#2d3142] transition border border-gray-700"
               >
                 10
               </button>
               <button
-                className="bg-[#252836] py-2 rounded-lg text-gray-300 hover:bg-[#2d3142] transition border border-gray-700"
+                onClick={() => setBetAmount(100)}
+                className="bg-[#3a4142] py-2 rounded-lg text-gray-300 hover:bg-[#2d3142] transition border border-gray-700"
               >
                 100
               </button>
               <button
-                className="bg-[#252836] py-2 rounded-lg text-gray-300 hover:bg-[#2d3142] transition border border-gray-700"
+                onClick={() => setBetAmount(1000)}
+                className="bg-[#3a4142] py-2 rounded-lg text-gray-300 hover:bg-[#2d3142] transition border border-gray-700"
               >
                 1.0k
               </button>
               <button
-                className="bg-[#252836] py-2 rounded-lg text-gray-300 hover:bg-[#2d3142] transition border border-gray-700"
+                onClick={() => setBetAmount(10000)}
+                className="bg-[#3a4142] py-2 rounded-lg text-gray-300 hover:bg-[#2d3142] transition border border-gray-700"
               >
                 10.0k
               </button>
@@ -279,39 +298,27 @@ function App() {
 
           {/* Mines Slider */}
           <div className="mb-6">
-            <label className="text-gray-300 font-medium mb-3 block">Mines</label>
-            <div className="relative">
-              <input
-                type="range"
-                min="1"
-                max="24"
-                value={minesCount}
-                onChange={(e) => setMinesCount(Number(e.target.value))}
-                disabled={gameState === 'playing'}
-                className="w-full"
-                style={{
-                  background: `linear-gradient(to right, #00e701 0%, #00e701 ${((minesCount - 1) / 23) * 100}%, #2d3142 ${((minesCount - 1) / 23) * 100}%, #2d3142 100%)`
-                }}
-              />
-              <div className="flex justify-between text-sm text-gray-400 mt-2">
-                <span>{minesCount}</span>
-                <span>24</span>
-              </div>
-            </div>
+            <CustomSlider 
+              value={minesCount}
+              onChange={setMinesCount}
+              disabled={gameState === 'playing'}
+              min={0}
+              max={24}
+            />
           </div>
 
           {/* Bet Button */}
           <button
             onClick={gameState === 'idle' ? handleBet : initializeGame}
             disabled={gameState === 'playing' && revealedTiles.length === 0}
-            className="w-full bg-green-primary hover:bg-green-glow text-black font-bold py-4 rounded-lg transition-all glow-green disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full  bg-green-primary hover:bg-green-glow text-black font-bold py-4 rounded-lg transition-all glow-green disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {gameState === 'playing' ? 'Cash Out' : 'Bet'}
           </button>
 
           {/* Demo Mode Message */}
           {betAmount === 0 && (
-            <div className="mt-4 bg-[#252836] border border-gray-700 rounded-lg p-3 flex items-center gap-2">
+            <div className="mt-4 bg-[#3a4142] border border-gray-700 rounded-lg p-3 flex items-center gap-2">
               <div className="w-5 h-5 border-2 border-gray-400 rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-gray-400 text-xs">i</span>
               </div>
@@ -336,10 +343,10 @@ function App() {
           
           {/* Top Info Section */}
           <div className="w-full mb-6 flex justify-start gap-4 relative z-10">
-            <div className="bg-[#1e2230] rounded-lg px-6 py-2 border border-gray-800">
+            <div className="bg-[#3a4142] rounded-lg px-6 py-2 ">
               <span className="text-gray-400 text-sm">0x</span>
             </div>
-            <div className="bg-[#1e2230] rounded-lg px-6 py-2 border border-gray-800">
+            <div className="bg-[#3a4142] rounded-lg px-6 py-2 ">
               <span className="text-gray-400 text-sm">0x</span>
             </div>
           </div>
@@ -350,15 +357,15 @@ function App() {
             <img 
               src={IMAGES.boxBg1} 
               alt="" 
-              className="absolute -left-8 -top-14 w-32 h-32 object-contain pointer-events-none opacity-70 z-20"
+              className="absolute left-2 -top-14 w-36 h-32 object-contain pointer-events-none opacity-70 z-20"
             />
             <img 
               src={IMAGES.boxBg2} 
               alt="" 
-              className="absolute -right-8 -top-14 w-32 h-32 object-contain pointer-events-none opacity-70 z-20"
+              className="absolute -right-0 -top-16 w-36 h-32 object-contain pointer-events-none opacity-70 z-20"
             />
             
-            <div className="grid grid-cols-5 gap-3 p-6 bg-[#1e2230]/50 rounded-xl border border-gray-800 backdrop-blur-sm">
+            <div className="grid grid-cols-5 gap-3 p-6 bg-[#3a4142]/50 rounded-xl border border-[#3a4142] backdrop-blur-sm">
               {tiles.map((tile, index) => (
                 <Tile
                   key={index}
@@ -397,10 +404,9 @@ function Tile({ tile, revealed, onClick, gameState }) {
         w-16 h-16 md:w-20 md:h-20 rounded-lg transition-all duration-300
         ${revealed ? 'tile-flip' : ''}
         ${isClickable ? 'cursor-pointer hover:scale-105' : 'cursor-default'}
-        ${!revealed ? 'bg-[#3a4456] hover:bg-[#4a5466] shadow-lg' : ''}
-        ${revealed && tile.hasMine ? 'bg-[#2d3142]' : ''}
+        ${!revealed ? 'bg-[#444c4d] hover:bg-[#545F60] shadow-lg' : ''}
+        ${revealed && tile.hasMine ? 'bg-[#444C4D]' : ''}
         ${revealed && !tile.hasMine ? 'bg-gradient-to-br from-purple-500 to-purple-700 shadow-purple-500/50' : ''}
-        border-2 border-gray-700/50
       `}
     >
       {revealed && (
