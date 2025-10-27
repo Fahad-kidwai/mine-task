@@ -11,6 +11,91 @@ const IMAGES = {
   mine: 'https://hash.game/modules/games2/assets/mines-1-0c3e7e76.png',
 };
 
+
+function CustomSlider({ value, onChange, disabled, min, max }) {
+  const [isDragging, setIsDragging] = useState(false);
+
+  const percentage = ((value - min) / (max - min)) * 100;
+
+  const updateValue = (clientX, trackElement) => {
+    if (!trackElement || disabled) return;
+    
+    const rect = trackElement.getBoundingClientRect();
+    const offsetX = clientX - rect.left;
+    const percentage = Math.max(0, Math.min(100, (offsetX / rect.width) * 100));
+    const newValue = Math.round((percentage / 100) * (max - min) + min);
+    
+    if (newValue !== value) {
+      onChange(newValue);
+    }
+  };
+
+  const handleMouseDown = (e) => {
+    if (disabled) return;
+    setIsDragging(true);
+    const track = e.currentTarget.querySelector('.slider-track');
+    updateValue(e.clientX, track);
+  };
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (e) => {
+      const track = document.querySelector('.slider-track');
+      updateValue(e.clientX, track);
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, disabled, value, onChange, min, max]);
+
+  return (
+    <div 
+      className={`relative w-full touch-none select-none items-center flex flex-row p-4 rounded-lg bg-[#292d2e] ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+      onMouseDown={handleMouseDown}
+    >
+      <label className="text-sm font-semibold leading-none mr-3.5 text-white sm:mr-3">
+        {value}
+      </label>
+      <div className="relative h-2.5 w-full grow rounded-full bg-[#3a4142] slider-track cursor-pointer">
+        {/* Progress fill */}
+        <div 
+          className="absolute h-full bg-gradient-to-r from-[#31ee88] to-[#9fe871] rounded-full pointer-events-none"
+          style={{ 
+            width: `${percentage}%`,
+            transition: isDragging ? 'none' : 'width 75ms'
+          }}
+        />
+        {/* Thumb */}
+        <div 
+          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-6 bg-white rounded-lg pointer-events-none"
+          style={{
+            left: `${percentage}%`,
+            cursor: isDragging ? 'grabbing' : 'grab',
+            transition: isDragging ? 'none' : 'left 75ms',
+            backgroundImage: `url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAwCAYAAAACYxrZAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAHKADAAQAAAABAAAAMAAAAABgjDanAAAAjklEQVRYCe2TuwqAMAxFfeAi6v//p4OLr6QoBUmvdFM4hdCQm4T2tGkaFgQgAAEIQOCNQCsSRtNms07kRNJhwdVsi0TVbLICpUf9PNabLSVRNVS3L/VL8Ss5z91PU1qnCYOZOlRU63WOdI9EYv8noH4ic6jelzlUdNDqCDCHdbxyNnOYWeBBAAIQgMD3CdzithhMnuqNvgAAAABJRU5ErkJggg==")`,
+            backgroundSize: '100% 100%',
+            backgroundPosition: 'center center',
+            boxShadow: 'rgba(116, 115, 115, 0.25) 0px 0px 4px 0px',
+          }}
+        />
+      </div>
+      <label className="text-sm font-semibold leading-none text-gray-400 ml-3">
+        {max}
+      </label>
+    </div>
+  );
+}
+
 function App() {
   const [minesCount, setMinesCount] = useState(4);
   const [betAmount, setBetAmount] = useState(0);
